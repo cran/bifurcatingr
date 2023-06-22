@@ -30,7 +30,7 @@ the autoregressive coefficients}
 \description{
 This function performs double bootstrapping of the least squares estimators
 of the autoregressive coefficients in a bifurcating autoregressive (BAR)
-model of any order \code{p} as described in Elbayoumi & Mostafa (2020).
+model of any order \code{p} as described in Elbayoumi and Mostafa (2020).
 }
 \examples{
 z <- bfa.tree.gen(31, 1, 1, 1, 0.5, 0.5, 0, 10, c(0.7))

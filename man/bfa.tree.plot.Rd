@@ -12,6 +12,7 @@ bfa.tree.plot(
   text.size = 1,
   text.color = "black",
   vertex.color = "gold",
+  vertex.asp = 0.25,
   arrow.size = 0.5,
   arrow.width = 0.5,
   arrow.color = "black",
@@ -41,6 +42,8 @@ colors with three or four bytes. Defaults to "black".}
 \item{vertex.color}{the fill color of the vertex. If you don't want some or
 all vertices to have any color, supply NA. The default is "gold". See also
 the options in \code{text.color}.}
+
+\item{vertex.asp}{a parameter that controls the aspect ratio of the plot, The default value is 0.25.}
 
 \item{arrow.size}{the size of the arrows. The default value is 0.5.}
 

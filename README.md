@@ -18,25 +18,23 @@ functions that can be used for analyzing bifurcating autoregressive
 data. The package implements the least squares estimation of bifurcating
 autoregressive models of any order, p, BAR(p), and allows for executing
 several types of bias correction on the least-squares estimators of the
-autoregressive parameters. Currently, the bias correction methods
-supported include bootstrap (single, double, and fast-double) bias
-correction and linear-bias-function-based bias correction. The library
-also contains functions for generating and plotting bifurcating
-autoregressive data from any BAR(p) model.
+autoregressive parameters including different types of confidence
+intervals. Currently, the bias correction methods supported include
+bootstrap (single, double, and fast-double) bias correction and
+linear-bias-function -based bias correction. The library also contains
+functions for generating and plotting bifurcating autoregressive data
+from any BAR(p) model.
 
 ## Installation
 
+You can install the development version of bifurcatingr like so:
+
+``` r
 You can install the released version of `bifurcatingr` from
 [CRAN](https://CRAN.R-project.org) with:
 
     install.packages("bifurcatingr")
-    #> Installing package into '/private/var/folders/7g/qtr08lf57lg62btzppl4cf4w0000gn/T/Rtmp1aFm9S/temp_libpath475cf58b299'
-    #> (as 'lib' is unspecified)
-    #> Warning: package 'bifurcatingr' is not available for this version of R
-    #> 
-    #> A version of this package for your version of R might be available elsewhere,
-    #> see the ideas at
-    #> https://cran.r-project.org/doc/manuals/r-patched/R-admin.html#Installing-packages
+```
 
 ## Example
 
@@ -46,30 +44,42 @@ the lifetimes of lineage E. coli cells.
 
 Loading the `bifurcatingr` library and the `ecoli` dataset:
 
-    library(bifurcatingr)
-    data("ecoli")
-
-Fitting a BAR(p=1) model to the `ecoli` dataset:
+``` r
+library(bifurcatingr)
+#> Loading required package: fMultivar
+data("ecoli")
+## Fitting a BAR(p=1) model to the `ecoli` dataset:
 
     bfa.ls(ecoli$lifetime, p = 1, conf = TRUE, conf.level = 0.95, 
            p.value = TRUE, cov.matrix = TRUE)
-    #> $coef
-    #>      Intercept  X_[t/2]
-    #> [1,]  17.61658 0.355198
-    #> 
-    #> $conf
-    #>                 2.5%      97.5%
-    #> Intercept  4.0722831 31.1608852
-    #> X_[t/2]   -0.1654543  0.8758503
-    #> 
-    #> $p.value
-    #>       Intercept  X_[t/2]
-    #> [1,] 0.01079535 0.181183
-    #> 
-    #> $error.cor
-    #> [1] 0.5836975
-    #> 
-    #> $cov.matrix
-    #>            [,1]       [,2]
-    #> [1,] 1480.39874 -56.147524
-    #> [2,]  -56.14752   2.187566
+#> $coef
+#>      Intercept  X_[t/2]
+#> [1,]  17.61658 0.355198
+#> 
+#> $p.value
+#>       Intercept  X_[t/2]
+#> [1,] 0.01079535 0.181183
+#> 
+#> $error.cor
+#> [1] 0.5836975
+#> 
+#> $cov.matrix
+#>            Intercept    X_[t/2]
+#> Intercept 1480.39874 -56.147524
+#> X_[t/2]    -56.14752   2.187566
+#> 
+#> $asymptotic.ci
+#>                 2.5%      97.5%
+#> Intercept  4.0722831 31.1608852
+#> X_[t/2]   -0.1654543  0.8758503
+#> 
+#> $bootstarp.ci
+#>                2.5%     97.5%
+#> Intercept  2.787469 32.445699
+#> X_[t/2]   -0.162691  0.873087
+#> 
+#> $percentile.ci
+#>                  2.5%      97.5%
+#> Intercept  3.91627094 29.0253668
+#> X_[t/2]   -0.05318311  0.8051654
+```

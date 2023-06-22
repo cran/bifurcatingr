@@ -1,12 +1,18 @@
-#' Single Bootstrap of Least Squares Estimators of BAR(p) Models
+#' Bootstrap of Bias-Correction Least Squares Estimators of BAR(p) Models
 #'
-#' This function performs single bootstrapping of the least squares estimators
-#' of the autoregressive coefficients in a bifurcating autoregressive (BAR)
-#' model of any order \code{p} as described in Elbayoumi and Mostafa (2020).
+#' This function performs linear-bias-function bias-correction (LBC), single
+#' bootstrap, double bootstrap, fast-double bootstrap of the bias-correction
+#' least squares estimators of the autoregressive coefficients in a bifurcating
+#' autoregressive (BAR) model of any order \code{p} as described in Elbayoumi &
+#' Mostafa (2020).
 #'
 #' @param z a numeric vector containing the tree data
 #' @param p an integer determining the order of bifurcating autoregressive model
 #'   to be fit to the data
+#' @param method method of bias correction. Currently, "boot1", "boot2",
+#'   "boot2fast" and "LBC" are supported and they implement single bootstrap,
+#'   double bootstrap, fast-double bootstrap, and linear-bias-function
+#'   bias-correction, respectively.
 #' @param burn number of tree generations to discard before starting the
 #'   bootstrap sample (replicate)
 #' @param B number of bootstrap samples (replicates)
@@ -15,16 +21,17 @@
 #'   Defaults to TRUE.
 #' @param boot.data a logical that determines whether the bootstrap samples
 #'   should be returned. Defaults to FALSE.
-#' @return \item{boot.est}{a matrix containing the bootstrapped least squares
-#'   estimates of the autoregressive coefficients} \item{boot.data}{a matrix
+#' @return \item{boot.bcest}{a matrix containing the bootstrapped bias-correction
+#'   least squares estimates of the autoregressive coefficients} \item{boot.data}{a matrix
 #'   containing the bootstrap samples used}
 #' @references Elbayoumi, T. M. & Mostafa, S. A. (2020). On the estimation bias
 #'   in bifurcating autoregressive models. \emph{Stat}, 1-16.
 #' @export
 #' @examples
 #' z <- bfa.tree.gen(31, 1, 1, 1, 0.5, 0.5, 0, 10, c(0.7))
-#' bfa.boot1.ls(z, p=1, B=999)
-bfa.boot1.ls <- function(z, p, burn = 5, B, boot.est=TRUE, boot.data=FALSE){  # burn can be determined by simulation
+#' bfa.boot.ls.bc(z, p=1, method="LBC", B=500)
+#' hist(bfa.boot.ls.bc(z, p=1, method="LBC", B=500)$boot.bcest)
+bfa.boot.ls.bc <- function(z, p, method="boot1",burn = 5, B, boot.est=TRUE, boot.data=FALSE){
   n=length(z)
   boot.dat <- matrix(rep(NA, n*B), ncol=n)
   est <- bfa.ls(z,p,resids=TRUE)
@@ -56,7 +63,7 @@ bfa.boot1.ls <- function(z, p, burn = 5, B, boot.est=TRUE, boot.data=FALSE){  # 
       }
       dat0[j] <- intercept+sum(term.matrix0[j,])+error0[j]
     }
-  # bootstrap tree
+    # bootstrap tree
     term.matrix <- matrix(rep(NA,p*n),ncol=p)
     dat <- rep(NA,n)
     er <- matrix(rep(NA,((n-1)/2)),ncol=2,nrow=((n-1)/2))
@@ -77,15 +84,15 @@ bfa.boot1.ls <- function(z, p, burn = 5, B, boot.est=TRUE, boot.data=FALSE){  # 
       }
       dat[j] <- intercept+sum(term.matrix[j,])+error[j]
     }
-  # copying missing values as in the original tree
-     for (k in 1:n){
+    # copying missing values as in the original tree
+    for (k in 1:n){
       dat[k] <- ifelse(is.na(z[k])==T, NA, dat[k])
-     }
+    }
     boot.dat[h,] <- dat
   }
   out <- list()
   if(boot.est)
-    out$boot.est=matrix(unlist(apply(boot.dat, 1, bfa.ls, p=p, error.cor=FALSE)),nrow=B, byrow=TRUE)
+    out$boot.bcest=matrix(unlist(apply(boot.dat, 1, bfa.ls.bc, p=p, method=method)),nrow=B, byrow=TRUE)
   if(boot.data)
     out$boot.data <- boot.dat
   return(out)

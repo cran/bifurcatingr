@@ -50,15 +50,15 @@ autoregressive coefficients}
 This function performs bias correction on the least squares estimators of the
 autoregressive coefficients in a BAR(p) model using single, double and
 fast-double bootstrapping, and the linear-bias-function approach as described
-in Elbayoumi & Mostafa (2020).
+in Elbayoumi and Mostafa (2021).
 }
 \examples{
 z <- bfa.tree.gen(63, 1, 1, 1, 0.5, 0.5, 0, 10, c(0.7))
-bfa.ls.bc(z, p=1, method="boot1")
+bfa.ls.bc(z, p=2, method="boot1")
 z <- bfa.tree.gen(63, 2, 1, 1, 0.5, 0.5, 0, 10, c(0.5, 0.3))
 bfa.ls.bc(z, p=2, method="LBC")
 }
 \references{
-Elbayoumi, T. M. & Mostafa, S. A. (2020). On the estimation bias
-in bifurcating autoregressive models. \emph{Stat}, 1-16.
+Elbayoumi, T. M. & Mostafa, S. A. (2021). On the estimation bias
+in bifurcating autoregressive models. \emph{Stat}, e342.
 }

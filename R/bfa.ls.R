@@ -1,7 +1,7 @@
 #' Least Squares Estimation of Bifurcating Autoregressive Models
 #'
 #' This function performs Least Squares estimation of bifurcating autoregressive
-#' (BFA) models of any order as described in Zhou & Basawa (2005).
+#' (BFA) models of any order as described in Zhou and Basawa (2005).
 #'
 #' @param z a numeric vector containing the tree data
 #' @param p an integer determining the order of bifurcating autoregressive model
@@ -21,11 +21,14 @@
 #'   variance-covariance matrix of the least squares estimates should be
 #'   returned. Defaults to FALSE.
 #' @param conf a logical that determines whether confidence intervals for model
-#'   coefficients should be returned. Defaults to FALSE. If TRUE, normal
-#'   confidence intervals are calculated using \code{cov.matrix}.
+#'   coefficients should be returned. Defaults to FALSE. If TRUE, asymptotic normal
+#'   confidence intervals for the intercept and the slops are calculated using
+#'  \code{cov.matrix}. In addition, normal bootstrap confidence interval, and
+#'   percentile confidence interval for the slop are calculated.
 #' @param conf.level confidence level to be used in computing the normal
 #'   confidence intervals for model coefficients when \code{conf=TRUE}. Defaults
 #'   to \code{0.95}.
+#' @param B number of bootstrap samples (replicates)
 #' @param p.value a logical that determines whether p-values for model
 #'   coefficients should be returned. Defaults to FALSE. If TRUE, p-values are
 #'   computed from normal distribution using estimated coefficients and
@@ -54,7 +57,7 @@
 #' z <- bfa.tree.gen(127, 1, 1, 1, -0.9, -0.9, 0, 10, c(0.7))
 #' bfa.ls(z, p=1)
 #' bfa.ls(z,p=1,conf=TRUE,cov.matrix = TRUE,conf.level = 0.9,p.value=TRUE)
-bfa.ls <- function(z, p, x.data=FALSE, y.data=FALSE, resids=FALSE, error.cor=TRUE, error.var=FALSE, cov.matrix=FALSE, conf=FALSE, conf.level=0.95, p.value=FALSE){
+bfa.ls <- function(z, p, x.data=FALSE, y.data=FALSE, resids=FALSE, error.cor=TRUE, error.var=FALSE, cov.matrix=FALSE, conf=FALSE, conf.level=0.95, B = 49, p.value=FALSE){
   n <- length(z)
   m <- (n-1)/2
   f <- c(1:p)
@@ -75,16 +78,6 @@ bfa.ls <- function(z, p, x.data=FALSE, y.data=FALSE, resids=FALSE, error.cor=TRU
   for (i in 1:length(r2)) r2[i] <- stats::resid(model)[(i*2)]
   sigma2 <- sum((model$residuals)^2)/(n-(2^p)-p)
   out <- list(coef=coef)
-  if(conf){
-    x.matrix <- cbind(rep(1,length(y)),x)
-    a <- (1/(length(y)))*t(x.matrix)%*%x.matrix
-    coef.cov <- sigma2*(1+error.cor)*MASS::ginv(a)
-    coef.conf.ll <- coef + stats::qnorm((1-conf.level)/2)*sqrt(diag(coef.cov)/n)
-    coef.conf.ul <- coef - stats::qnorm((1-conf.level)/2)*sqrt(diag(coef.cov)/n)
-    coef.conf <- t(rbind(coef.conf.ll, coef.conf.ul))
-    colnames(coef.conf) <- c(paste0(((1-conf.level)/2)*100,"%"), paste0((1-(1-conf.level)/2)*100,"%"))
-    out$conf <- coef.conf
-  }
   if(p.value){
     x.matrix <- cbind(rep(1,length(y)),x)
     a <- (1/(length(y)))*t(x.matrix)%*%x.matrix
@@ -107,6 +100,38 @@ bfa.ls <- function(z, p, x.data=FALSE, y.data=FALSE, resids=FALSE, error.cor=TRU
     a <- (1/(length(y)))*t(x.matrix)%*%x.matrix
     coef.cov <- sigma2*(1+error.cor)*MASS::ginv(a)
     out$cov.matrix <- coef.cov
+    colnames(out$cov.matrix) <- c('Intercept', paste0('X_[t/',2^c(1:p),"]"))
+    rownames(out$cov.matrix) <- c('Intercept', paste0('X_[t/',2^c(1:p),"]"))
   }
+  if(conf){
+    x.matrix <- cbind(rep(1,length(y)),x)
+    a <- (1/(length(y)))*t(x.matrix)%*%x.matrix
+    coef.cov <- sigma2*(1+error.cor)*MASS::ginv(a)
+    coef.conf.ll <- coef + stats::qnorm((1-conf.level)/2)*sqrt(diag(coef.cov)/n)
+    coef.conf.ul <- coef - stats::qnorm((1-conf.level)/2)*sqrt(diag(coef.cov)/n)
+    coef.conf <- t(rbind(coef.conf.ll, coef.conf.ul))
+    colnames(coef.conf) <- c(paste0(((1-conf.level)/2)*100,"%"), paste0((1-(1-conf.level)/2)*100,"%"))
+    out$asymptotic.ci <- coef.conf
+
+    asyb.matrs=matrix(rep(NA,(p+1)*2),nrow=p+1)
+    perc.matrs=matrix(rep(NA,(p+1)*2),nrow=p+1)
+    a1.ls.star = bfa.boot1.ls(z, p, burn = 5, B , boot.est = TRUE, boot.data = FALSE)
+    for (i in 1:(p+1)) {
+      asyb.ci = bfa.boot.ci(coef[1,i], a1.ls.star$boot.est[,i], conf.level)
+      asyb.matrs[i,1]=asyb.ci[1]
+      asyb.matrs[i,2]=asyb.ci[2]
+      perc.ci = bfa.perc.ci(a1.ls.star$boot.est[,i], conf.level)
+      perc.matrs[i,1]=perc.ci[1]
+      perc.matrs[i,2]=perc.ci[2]
+
+    }
+
+    out$bootstarp.ci <- asyb.matrs
+    colnames(out$bootstarp.ci) <- c(paste0(((1-conf.level)/2)*100,"%"), paste0((1-(1-conf.level)/2)*100,"%"))
+    rownames(out$bootstarp.ci) <- c('Intercept', paste0('X_[t/',2^c(1:p),"]"))
+    out$percentile.ci <- perc.matrs
+    colnames(out$percentile.ci) <- c(paste0(((1-conf.level)/2)*100,"%"), paste0((1-(1-conf.level)/2)*100,"%"))
+    rownames(out$percentile.ci) <- c('Intercept', paste0('X_[t/',2^c(1:p),"]"))
+    }
   return(out)
 }

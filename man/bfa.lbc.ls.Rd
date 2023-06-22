@@ -20,7 +20,7 @@ squares estimates of the autoregressive coefficients}
 This function performs bias correction on the least squares estimators of the
 autoregressive coefficients in a BAR(p) model based on the assumption that
 the bias of the least squares estimator is approximately linear as a function
-of the parameter as described in Elbayoumi & Mostafa (2020).
+of the parameter as described in Elbayoumi and Mostafa (2020).
 }
 \examples{
 z <- bfa.tree.gen(127, 1, 1, 1, 0.5, 0.5, 0, 10, c(0.7))

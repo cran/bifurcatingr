@@ -15,6 +15,7 @@ bfa.ls(
   cov.matrix = FALSE,
   conf = FALSE,
   conf.level = 0.95,
+  B = 49,
   p.value = FALSE
 )
 }
@@ -45,12 +46,16 @@ variance-covariance matrix of the least squares estimates should be
 returned. Defaults to FALSE.}
 
 \item{conf}{a logical that determines whether confidence intervals for model
-coefficients should be returned. Defaults to FALSE. If TRUE, normal
-confidence intervals are calculated using \code{cov.matrix}.}
+coefficients should be returned. Defaults to FALSE. If TRUE, asymptotic normal
+confidence intervals for the intercept and the slops are calculated using
+\code{cov.matrix}. In addition, normal bootstrap confidence interval, and
+percentile confidence interval for the slop are calculated.}
 
 \item{conf.level}{confidence level to be used in computing the normal
 confidence intervals for model coefficients when \code{conf=TRUE}. Defaults
 to \code{0.95}.}
+
+\item{B}{number of bootstrap samples (replicates)}
 
 \item{p.value}{a logical that determines whether p-values for model
 coefficients should be returned. Defaults to FALSE. If TRUE, p-values are
@@ -77,7 +82,7 @@ Only returned if \code{p.value=TRUE}}
 }
 \description{
 This function performs Least Squares estimation of bifurcating autoregressive
-(BFA) models of any order as described in Zhou & Basawa (2005).
+(BFA) models of any order as described in Zhou and Basawa (2005).
 }
 \examples{
 z <- bfa.tree.gen(127, 1, 1, 1, -0.9, -0.9, 0, 10, c(0.7))

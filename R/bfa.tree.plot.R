@@ -18,6 +18,7 @@
 #' @param vertex.color the fill color of the vertex. If you don't want some or
 #'   all vertices to have any color, supply NA. The default is "gold". See also
 #'   the options in \code{text.color}.
+#' @param vertex.asp a parameter that controls the aspect ratio of the plot, The default value is 0.25.
 #' @param arrow.size the size of the arrows. The default value is 0.5.
 #' @param arrow.width the width of the arrows. The default value is 0.5.
 #' @param arrow.color the color of the arrows. The default is "black". See also
@@ -37,13 +38,13 @@
 #' bfa.tree.plot(z,shape= "circle")
 #' bfa.tree.plot(z,shape= "circle", text.color="white", vertex.color = "darkgrey")
 bfa.tree.plot<- function(z, digits, shape= "none", vertex.size = 10, text.size = 1,
-                         text.color="black", vertex.color = "gold", arrow.size = 0.5,
+                         text.color="black", vertex.color = "gold", vertex.asp = 0.25, arrow.size = 0.5,
                          arrow.width = 0.5, arrow.color="black", plot.margin = -0.3){
   tree <- igraph::make_tree(n=length(z), children=2)
   igraph::V(tree)$name <- round(z, digits=digits)
   lay <- igraph::layout_as_tree(tree,flip.y = TRUE)
   plot(tree, layout=lay, vertex.shape= shape, vertex.size=vertex.size, vertex.label.cex=text.size,
        vertex.label.color=text.color,vertex.color=vertex.color, edge.color=arrow.color,
-       edge.arrow.size = arrow.size, edge.width = arrow.width, margin=plot.margin)
+       edge.arrow.size = arrow.size, edge.width = arrow.width, margin=plot.margin, asp=vertex.asp)
 }
 

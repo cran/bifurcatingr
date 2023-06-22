@@ -1,0 +1,16 @@
+#' Mean Lifetimes (in tenths of hours) of EMT6 (BALB/c mouse mammary tumor) cells.
+#'
+#' A real cell lineage dataset taken from Staudte et al. (1984).
+#' The values represent the mean lifetimes in tenths of hours obtained from
+#' averaging observations from 41 bifurcating trees. The averaging of observations
+#' and the tree are made by Elbayoumi and Mostafa (2023).
+#'
+#' @format A data frame with 63 rows and 1 variable:
+#' \describe{
+#'   \item{mean.lifetime}{EMT6 cells lifetime, in tenths of hours}
+#'   }
+#'
+#' @source Elbayoumi, T. and Mostafa, S. (2023). Impact of Bias Correction of the Least Squares Estimation on
+#' Bootstrap Confidence Intervals for Bifurcating Autoregressive Models. \emph{Journal of Data Science},
+#' doi.org/10.6339/23-JDS1092.
+"emt6"

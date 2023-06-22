@@ -4,7 +4,7 @@
 \alias{bfa.tree.gen}
 \title{Bifurcating Autoregressive Tree generator}
 \usage{
-bfa.tree.gen(n, p, s1, s2, r1, r2, g, intercept, ar.coef)
+bfa.tree.gen(n, p, s1, s2, r1, r2, g, intercept, ar.coef, dist = "cnorm", a)
 }
 \arguments{
 \item{n}{tree size (integer)}
@@ -24,13 +24,24 @@ between pairs of errors in the second component of the mixture normal
 distribution generating the contaminated errors. r2 is only effective when
 g>0.}
 
-\item{g}{proportion of contamination. Defaults to zero producing
-non-contaminated multivariate normal errors for the tree generation.}
+\item{g}{proportion of contamination when contaminated normal distribution is
+selected, or a positive value representing the degrees
+of freedom when skew t-student distribution is selected. Defaults to zero
+producing non-contaminated multivariate normal errors.}
 
 \item{intercept}{the intercept in the BAR model generating the tree}
 
 \item{ar.coef}{a vector of length p giving the autoregressive coefficients in
 the BAR model generating the tree}
+
+\item{dist}{determine the distribution of the error. Three distributions are
+available; Contaminated normal distribution "cnorm", Skew normal distribution
+"snorm", and Skew t-student distribution "st".}
+
+\item{a}{an integer which regulates the the slant of the density when skew
+normal distribution or skew t-student distribution is selected. Defaults to zero
+producing non-skewed multivariate normal errors, and non-skewed multivariate
+t-student errors for the tree generation.}
 }
 \value{
 A numeric vector representing a bifurcating autoregressive (BFA) tree
@@ -41,10 +52,20 @@ This function generate bifurcating autoregressive (BFA) trees of any size
 based on a BFA model of any order.
 }
 \examples{
-#Non-contaminted BAR(1) tree:
+# Non-contaminated normal BAR(1) tree:
 bfa.tree.gen(127, 1, 1, 1, 0.5, 0.5, 0, 10, c(0.7))
-#Non-contaminted BAR(2) tree:
+# Non-contaminated normal BAR(2) tree:
 bfa.tree.gen(127, 2, 1, 1, 0.5, 0.5, 0, 10, c(0.5, 0.3))
-#Contaminted BAR(1) tree:
+# Contaminated normal BAR(1) tree:
 bfa.tree.gen(127, 1, 1, 2, 0.5, 0.5, 0.2, 10, c(0.7))
+# BAR(1) tree with error generated from skewed-t distribution with skewness equals to -3:
+bfa.tree.gen(127, 1, 1, 2, 0.5, 0.5, 0, 10, c(0.7),dist="snorm",-3)
+# BAR(2) tree with error generated from skewed-t distribution with skewness equals to 3:
+bfa.tree.gen(127, 2, 1, 2, 0.5, 0.5, 0, 10, c(0.7,0.5),dist="snorm",3)
+# BAR(1) tree with error generated from skewed-t distribution with skewness equals
+# to -3 and df equals to 10:
+bfa.tree.gen(127, 1, 1, 2, 0.5, 0.5, 10, 10, c(0.7),dist="st",-3)
+# BAR(2) tree with error generated from skewed-t distribution with skewness equals
+# to 3 and df equals to 1:
+bfa.tree.gen(127, 2, 1, 2, 0.5, 0.5, 10, 10, c(0.7,0.5),dist="st",3)
 }

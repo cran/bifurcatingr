@@ -2,7 +2,6 @@
 #'
 #' Draw scatterplots between observations at time \code{t} and the lagged
 #' observations from the given bifurcating autoregressive tree data.
-#'
 #' @param p an integer determining the order of the bifurcating autoregressive
 #'   model that is believed to best fit the data
 #' @inheritParams bfa.ls
@@ -31,8 +30,8 @@ bfa.scatterplot <- function(z, p, ...){
   g <- rev(c(2^(1:p-1)))
   for (k in 1:p){
     x[,k] <- rep(z[g[k]:d[k]],each=2^f[k])}
-  dat <- cbind(matrix(y, ncol=1),x)
-  colnames(dat) <- c('X_t', paste0('X_[t/',2^c(1:p),"]"))
+  dat <- cbind(matrix(x, ncol=p),y)
+  colnames(dat) <- c( paste0('X_[t/',2^c(1:p),"]"),'X_t')
   if(p==1) plot(dat, ...)
   if(p>1) graphics::pairs(dat, labels=colnames(dat), ...)
 }

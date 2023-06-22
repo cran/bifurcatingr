@@ -2,7 +2,6 @@
 #'
 #' This function generates contaminated multivariate normal errors that are used
 #' in the generation of the Bifurcating autoregressive tree.
-#'
 #' @param n sample size
 #' @param d dimension. Defaults to 2 for bivariate normal errors.
 #' @param mu1 mean vector for first multivariate normal distribution. Defaults
