@@ -18,5 +18,5 @@ rmnorm <- function(n, d=2, mu=rep(0,d), sigma=diag(d)){
   A <- temp$vectors%*%(lambda^0.5)%*%t(temp$vectors)
   z <- matrix(stats::rnorm(n*d,0,1),ncol=n,nrow=d)
   x <- A%*%z + mu
-  return(t(x))
+  t(x)
 }

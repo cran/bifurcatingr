@@ -1,3 +1,7 @@
+# bifurcatingr 2.1.0
+The function naming convention was separated with dots  (`.`). It is modified to use underscore instead ( '_'). For example, the function "bfa.ls" becomes "bfa_ls".  in addition, vignette file is developed and published with this version.
+
+
 # bifurcatingr 2.0.0
 
 ## NEW FEATURES

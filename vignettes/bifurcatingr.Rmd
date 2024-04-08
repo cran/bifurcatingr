@@ -14,6 +14,90 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+## Introduction
+The bifurcating autiegressive (BAR) model is a useful tool for studying binary tree-structured data, often seen in cell-lineage studies. The "bifurcatingr" R package makes it easier to work with these models. It can estimate different orders of BAR models and improve accuracy through various correction methods. These methods include bootstrap-based corrections and linear bias functions. The package also helps generate and visualize data from BAR models and offers eight ways to estimate confidence intervals for the model's coefficients, with or without bias correction.
+
+## Installation
+To install the library from CRAN, use:
+```{r, eval=FALSE}
+install.packages("bifurcatingr")
+```
+
+## Usage
+To use bifurcatingr in your R code, you must first load the library:
+```{r}
 library(bifurcatingr)
 ```
+
+## Generating binary tree data
+To generate binary tree data based on a the bifurcating autoregressive model (BAR) model, you can use the "bfa.tree.gen" function. Generating a binary tree with 127 observations based on a first-order BAR model with errors that follow a contaminated bivariate normal distribution with 20% contamination. A zero mean vector is used and the standard deviations are 1 and 2, respectively. The intercept is set to 10 and the autoregressive coefficient is 0.7.
+```{r}
+dat<-bfa_tree_gen(n=127,p=1,s1=1,s2=2,r1=0.5,r2=0.5,g=0.2,intercept=10,ar_coef=c(0.7))
+dat <- round(dat,1)
+dat
+```
+
+## Graphing binary tree data
+The function "bfa.tree.plot" is designed to represent the binary tree data usong igraph library. By making use of the cell lineage dataset found in Cowan and Staudte (1986) and stored in the bifurcatingr package as "ecoli", executing the following command will generate the tree.
+
+```{r,out.width="75%",dpi=750}
+bfa_tree_plot(ecoli$lifetime, vertex.size = 10, shape = "circle", text.size = 0.3, vertex.color = "white",vertex.asp = 0.5, arrow.size = 0.2, arrow.width = 0.3, plot.margin = 0)
+```
+
+
+## Graphing scatterplots
+The BAR model can be visualized using a scatterplot depicting the relationship between observations at time "t" and their lagged observations. This is done through the "bfa.scatterplot" function. This function requires two inputs: the binary tree data as a numeric vector "z" and the lag order "p". The following command generates a scatterplot for the genrated binary tree above based on the BAR(1) model:
+
+
+```{r,out.width="75%",dpi=750}
+bfa_scatterplot(dat,1)
+```
+
+The following command generat scatterplot based on the BAR(2) model for the same data above.
+```{r,out.width="75%",dpi=750}
+bfa_scatterplot(dat,2)
+```
+
+## Least squares estimation for BAR models
+The "bfa.ls" function is used for obtaining least squares estimates for the parameters of a
+BAR model of any order. This function yields the LS estimates for the BAR model coefficients along
+with their corresponding p-values for testing if the coefficient is different from zero, the correlation
+among the errors, the variance-covariance matrix of the estimates, and both Wald-type asymptotic
+and standard normal or percentile) bootstrap confidence intervals. The following command illustrates
+this function on the simulated data above "dat" when fitted by a BAR(1) model.
+```{r}
+bfa_ls(dat,p=1,conf=TRUE,cov_matrix=TRUE,conf_level=0.9,p_value=TRUE)
+```
+
+## Least squares bias correction for the coefficients of BAR models
+The "bfa.ls.bc" function provides bias-corrected LS estimates of the BAR model coefficients. Currently,
+four distinct bias correction techniques are available: single, double, and fast-double bootstrapping,
+along with the linear-bias-function approach.
+The "bfa.ls.bc" function to obtain the bias-corrected estimates of the AR coefficient in BAR(1) model based on the single bootstrap bias correction method for the simulated data above "dat" is as follows
+
+```{r}
+bfa_ls_bc(dat,p = 1, method = "boot1",B1 = 999, B2 = 499)
+```
+
+The "bfa.ls.bc" function to obtain the bias-corrected estimates of the AR coefficient in BAR(1) model based on the fast double bootstrap bias correction method for the simulated data above "dat" is as follows
+```{r}
+bfa_ls_bc(dat,p = 1, method = "boot2fast",B1 = 999, B2 = 499)
+```
+The "bfa.ls.bc" function to obtain the bias-corrected estimates of the AR coefficient in BAR(1) model based on the asymptotic linear bias-correction method for the simulated data above "dat" is as follows
+```{r}
+bfa_ls_bc(dat, p=1, method="LBC")
+```
+## Confidence Intervals
+The bifurcatingr package allows for constructing various types of confidence intervals based on the LS estimation of the BAR model coefficients. Both corrected and uncorrected bias confidence intervals are available through the "bfa.ls.bc.ci" function. 
+For instance, the following command can be used to construct a 95% BCa confidence interval for the autoregressive coefficient of the BAR(1) model fitted to the simulated data abouve "dat".
+
+```{r}
+bfa_ls_bc_ci(dat, p=1, method="BCa", B=4)
+```
+To construct a 95% single bootstrap bias-corrected standard normal bootstrap confidence intervals for the autoregressive coefficients of the BAR(1) model for the simulated data above "dat" as follows.
+```{r}
+bfa_ls_bc_ci(dat, p=1, method="boot1", B=4)
+```
+
+## Where to go next
+This tutorial is a brief introduction to bifurcatingr in R. We sincerely hope you enjoyed reading it and that it will be useful for your binary tree analysis based on the autoregressive models. For a detailed description of specific functions, see <https://cran.r-project.org/package=bifurcatingr>. For questions on how to use bifurcatingr, or to report a bug, please email Dr. Tamer Elbayoumi at email: <tmelbayoumi@ncat.edu>.
